@@ -1,9 +1,25 @@
 var express = require ('express');
 var app = express();
+
+//body parser that allow access POST request parameters
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended: true}));
 var PORT = 8080;
 
 //middleware
 app.set("view engine", "ejs");
+
+//function that produces a string of 6 random alphanumeric characters:
+function generateRandomString() {
+
+  var randomString = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (var i = 0; i < 6; i++)
+    randomString += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return randomString;
+}
 
 
 //data for app
@@ -20,6 +36,17 @@ app.get('/urls', (req, res) =>{
   let templateVars = {urls: urlDatabase};
   res.render("urls_index", templateVars);
 });
+
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
+
+app.post("/urls", (req, res) => {
+  console.log(req.body);
+  res.send("Ok");
+});
+
+
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id] };
