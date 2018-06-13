@@ -1,6 +1,5 @@
 var express = require ('express');
 var app = express();
-
 //body parser that allow access POST request parameters
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
@@ -66,13 +65,20 @@ app.post("/urls/:shortURL/delete", (req, res) =>{
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
+  console.log(req.body)
 });
 
+//edit
+app.post("/urls/:shortURL", (req, res) => {
+  //console.log(req.body);
+  urlDatabase[req.params["shortURL"]] = req.body["longURL"]
 
+  res.redirect("/urls")
+})
 
-
-app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id] };
+//show
+app.get("/urls/:shortURL", (req, res) => {
+  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
 });
 
