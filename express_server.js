@@ -29,6 +29,12 @@ var urlDatabase = {
 };
 
 
+//displays for app
+app.get('/', (req, res) =>{
+  res.end("Hello!")
+});
+
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -51,6 +57,11 @@ app.post("/urls", (req, res) => {
   res.redirect( "http://localhost:8080/urls/" + randomURL)
 
   });
+
+app.post("/urls/:shortURL/delete", (req, res) =>{
+  delete urlDatabase[req.params.shortURL]
+  res.redirect("http://localhost:8080/urls");
+})
 
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
