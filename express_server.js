@@ -28,6 +28,7 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -43,8 +44,19 @@ app.get("/urls/new", (req, res) => {
 
 app.post("/urls", (req, res) => {
   console.log(req.body);
-  res.send("Ok");
+
+  var errors = [];
+  let randomURL = generateRandomString()
+  urlDatabase[randomURL] = req.body.longURL
+  res.redirect( "http://localhost:8080/urls/" + randomURL)
+
+  });
+
+app.get("/u/:shortURL", (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
 });
+
 
 
 
