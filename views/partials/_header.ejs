@@ -5,5 +5,23 @@
   <header>
     <h1>The Tiny App</h1>
   </header>
+ <% if (username) {%>
+  <form action = "/logout" method ="POST">
+    <div>Welcome, <%= username%> </div>
+    <input type="submit" name="logout" value="Sign Out"/>
+  </form>
+
+    <% } else { %>
+  <form action="/login" method="POST">
+
+    <div>
+      <label for= "username">Username: </label>
+    <input type="text" name="username" value=""/>
+    </div>
+    <div>
+    <input type="submit" name="" value="Sign In".>
+    </div>
+    <% } %>
+  </form>
 </body>
 </html>

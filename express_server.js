@@ -1,9 +1,13 @@
 var express = require ('express');
 var app = express();
+var cookieParser = require('cookie-parser');
+app.use(cookieParser());
 //body parser that allow access POST request parameters
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 var PORT = 8080;
+
+
 
 //middleware
 app.set("view engine", "ejs");
@@ -38,15 +42,30 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+//login with cookie
+app.post("/login", (req, res)=>{
+  res.cookie("username", req.body.username)
+  res.redirect("/urls")
+})
+
+//logout
+app.post("/logout", (req, res) =>{
+  res.clearCookie("username", req.body["username"])
+  res.redirect("/urls")
+})
+
+//show the list of urls on database
 app.get('/urls', (req, res) =>{
-  let templateVars = {urls: urlDatabase};
+  let templateVars = {urls: urlDatabase, username: req.cookies["username"]};
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {username: req.cookies["username"]};
+  res.render("urls_new", templateVars);
 });
 
+// assign randomized characters to new long url
 app.post("/urls", (req, res) => {
   console.log(req.body);
 
@@ -57,11 +76,13 @@ app.post("/urls", (req, res) => {
 
   });
 
+//delete urls in database
 app.post("/urls/:shortURL/delete", (req, res) =>{
   delete urlDatabase[req.params.shortURL]
   res.redirect("http://localhost:8080/urls");
 })
 
+//redirect to long url
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
@@ -78,7 +99,7 @@ app.post("/urls/:shortURL", (req, res) => {
 
 //show
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  let templateVars = { username: req.cookies["username"], shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
 });
 
