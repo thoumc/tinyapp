@@ -1,16 +1,13 @@
+//middleware
 var express = require ('express');
 var app = express();
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
+app.set("view engine", "ejs");
 //body parser that allow access POST request parameters
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 var PORT = 8080;
-
-
-
-//middleware
-app.set("view engine", "ejs");
 
 //function that produces a string of 6 random alphanumeric characters:
 function generateRandomString() {
@@ -31,12 +28,25 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+// users of the app
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
+
 
 //displays for app
 app.get('/', (req, res) =>{
-  res.end("Hello!")
+  res.end("Welcome to the tiny app!")
 });
-
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
@@ -67,7 +77,7 @@ app.get("/urls/new", (req, res) => {
 
 // assign randomized characters to new long url
 app.post("/urls", (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
 
   var errors = [];
   let randomURL = generateRandomString()
@@ -101,6 +111,41 @@ app.post("/urls/:shortURL", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { username: req.cookies["username"], shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
+});
+
+//registration page (***** do i need the cookies template here?)
+app.get("/register", (req, res) => {
+  let templateVars = {username: req.cookies["username"],}
+  res.render("urls_register", templateVars)
+})
+
+// get registered
+app.post("/register", (req, res) => {
+
+  let alreadyExists = false;
+
+  for (var userID in users) {
+    if (users[userID].email === req.body.email) {
+      alreadyExists = true;
+    }
+
+  if (alreadyExists || !req.body.email || !req.body.password) {
+    res.status(400);
+    res.render("400");
+    console.log(users[userID].email);
+  } else {
+    let randomUserID = generateRandomString();
+    let newUser = {
+      id: randomUserID,
+      email: req.body["email"],
+      password: req.body["password"]
+    }
+    users[randomUserID] = newUser;
+    res.cookie("userID", randomUserID )
+    res.redirect("/urls");
+    console.log(users);
+    console.log(users[userID].email);
+  } }
 });
 
 
