@@ -70,6 +70,8 @@ app.post("/login", (req, res)=>{
         console.log("userID is ", userID);
         res.cookie("userID", users[userID]);
         res.redirect("/urls");
+        break;
+
       } else {
         res.status(403);
         res.render("400");
@@ -94,13 +96,21 @@ app.post("/logout", (req, res) =>{
 //show the list of urls on database
 app.get('/urls', (req, res) =>{
   let templateVars = {urls: urlDatabase, user: users[req.cookies["userID"]]};
+  if (req.cookies["userID"]){
+
   res.render("urls_index", templateVars);
+} else {
+  res.render("urls_login")
+}
 });
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {user: users[req.cookies["userID"]]};
-  res.render("urls_new", templateVars);
-});
+     if (req.cookies["userID"]){
+      res.render("urls_new", templateVars);
+  } else {
+  res.render("urls_login");
+}});
 
 
 // assign randomized characters to new long url
