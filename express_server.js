@@ -39,6 +39,11 @@ const users = {
     id: "user2RandomID",
     email: "user2@example.com",
     password: "dishwasher-funk"
+  },
+  "123" :{
+    id: "123",
+    email: "12@12.com",
+    password: "12"
   }
 }
 
@@ -54,12 +59,24 @@ app.get("/urls.json", (req, res) => {
 
 //login with cookie
 app.post("/login", (req, res)=>{
-  res.cookie("userEmail", req.body["userEmail"])
-  res.cookie("userPassword", req.body["userPassword"])
-  res.redirect("/urls")
+  //res.cookie("userEmail", req.body["userEmail"]);
+
+  let alreadyExists = false;
+
+  for (var userID in users) {
+    if (users[userID].email === req.body["userEmail"]) {
+      alreadyExists = true;
+    } if (alreadyExists && users[userID].password === req.body["userPassword"]){
+        console.log("userID is ", userID);
+        res.cookie("userID", users[userID]);
+        res.redirect("/urls");
+      } else {
+        res.status(403);
+        res.render("400");
+        console.log(users[userID].email);
+  } }
   console.log(req.body.userEmail)
-  console.log(req.body.userPassword)
-})
+});
 
 //login page
 app.get("/login", (req, res) =>{
@@ -69,7 +86,7 @@ app.get("/login", (req, res) =>{
 
 //logout
 app.post("/logout", (req, res) =>{
-  res.clearCookie("userID", req.body["userID"])
+  res.clearCookie("userID", {user: users[req.cookies["userID"]]})
   res.redirect("/urls")
 })
 
@@ -84,6 +101,7 @@ app.get("/urls/new", (req, res) => {
   let templateVars = {user: users[req.cookies["userID"]]};
   res.render("urls_new", templateVars);
 });
+
 
 // assign randomized characters to new long url
 app.post("/urls", (req, res) => {
