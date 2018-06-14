@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+<body>
+  <header>
+    <h1>The Tiny App</h1>
+     <h3> Log in here:</h3>
+  </header>
+ <% if (user ) {%>
+  <form action = "/logout" method ="POST">
+    <div>Welcome, <%= user.id %> </div>
+    <input type="submit" name="logout" value="Sign Out"/>
+  </form>
+
+    <% } else { %>
+  <form action="/login" method="POST">
+
+    <div>
+      <label for= "userEmail">Email: </label>
+    <input type="Email" name= "userEmail" value=""/>
+    </div>
+    <div>
+      <label for = "userPassword">Password: </label>
+      <input type="text" name= "userPassword" value=""/>
+    </div>
+    <div>
+    <input type="submit" name="" value="Sign In".>
+    </div>
+    <% } %>
+  </form>
+</body>
+</html>

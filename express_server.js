@@ -54,24 +54,34 @@ app.get("/urls.json", (req, res) => {
 
 //login with cookie
 app.post("/login", (req, res)=>{
-  res.cookie("username", req.body.username)
+  res.cookie("userEmail", req.body["userEmail"])
+  res.cookie("userPassword", req.body["userPassword"])
   res.redirect("/urls")
+  console.log(req.body.userEmail)
+  console.log(req.body.userPassword)
+})
+
+//login page
+app.get("/login", (req, res) =>{
+  let templateVars = {user: users[req.cookies["userID"]]};
+  res.render("urls_login", templateVars)
 })
 
 //logout
 app.post("/logout", (req, res) =>{
-  res.clearCookie("username", req.body["username"])
+  res.clearCookie("userID", req.body["userID"])
   res.redirect("/urls")
 })
 
+
 //show the list of urls on database
 app.get('/urls', (req, res) =>{
-  let templateVars = {urls: urlDatabase, username: req.cookies["username"]};
+  let templateVars = {urls: urlDatabase, user: users[req.cookies["userID"]]};
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = {username: req.cookies["username"]};
+  let templateVars = {user: users[req.cookies["userID"]]};
   res.render("urls_new", templateVars);
 });
 
@@ -109,13 +119,13 @@ app.post("/urls/:shortURL", (req, res) => {
 
 //show
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { username: req.cookies["username"], shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  let templateVars = { user: users[req.cookies["userID"]], shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
 });
 
 //registration page (***** do i need the cookies template here?)
 app.get("/register", (req, res) => {
-  let templateVars = {username: req.cookies["username"],}
+  let templateVars = {userID: req.cookies["userID"],}
   res.render("urls_register", templateVars)
 })
 

@@ -5,22 +5,18 @@
   <header>
     <h1>The Tiny App</h1>
   </header>
- <% if (username) {%>
+ <% if (user) {%>
   <form action = "/logout" method ="POST">
-    <div>Welcome, <%= username%> </div>
+    <div>Welcome, <%= user %> </div>
     <input type="submit" name="logout" value="Sign Out"/>
   </form>
-
     <% } else { %>
-  <form action="/login" method="POST">
-
-    <div>
-      <label for= "username">Username: </label>
-    <input type="text" name="username" value=""/>
-    </div>
-    <div>
-    <input type="submit" name="" value="Sign In".>
-    </div>
+        <td colSpan="2">
+          <a href= "/register">Register</a>
+        </td>
+        <td colSpan="2">
+          <a href= "/login">Log In</a>
+        </td>
     <% } %>
   </form>
 </body>
