@@ -10,22 +10,22 @@
   <table>
     <thead>
       <tr>
-        <td>Url</td>
-        <td>ShortUrl</td>
+        <td>ShortURL</td>
+        <td>LongURL</td>
       </tr>
     </thead>
     <tbody>
-      <% for(shortURL in urls){%>
+          <% urls.forEach(url => { %>
       <tr>
-        <td><%=shortURL%></td>
-        <td><%=urls[shortURL]%></td>
-        <td><a href="/urls/<%=shortURL%>">Edit</a></td>
-        <td> <form method="POST" action="/urls/<%=shortURL%>/delete">
+        <td><%= url.shortURL %></td>
+        <td><%= url.longURL %></td>
+        <td><a href="/urls/<%=url.shortURL%>">Edit</a></td>
+        <td> <form method="POST" action="/urls/<%= url.shortURL %>/delete">
           <input type="submit" value="Delete"/>
         </form>
         </td>
       </tr>
-      <% } %>
+      <% }) %>
       <tr>
         <td colSpan="2">
           <a href= "/urls/new">New Short Url</a>

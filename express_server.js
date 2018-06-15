@@ -21,12 +21,24 @@ function generateRandomString() {
   return randomString;
 }
 
+//function to match url and url.id ********
+const findURL = id => {
+  const URL = urlDatabase.filter(URL => url.id === id)[0];
+
+  return URL;
+};
 
 //data for app
-var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca" ,
-  "9sm5xK": "http://www.google.com"
-};
+var urlDatabase = [
+  {
+    shortURL: "b2xVn2",
+    longURL:"http://www.lighthouselabs.ca",
+    userID: "userRandomID" },
+  {
+    shortURL: "9sm5xK",
+    longURL: "http://www.google.com",
+    userID: "user2RandomID" }
+];
 
 // users of the app
 const users = {
@@ -96,12 +108,7 @@ app.post("/logout", (req, res) =>{
 //show the list of urls on database
 app.get('/urls', (req, res) =>{
   let templateVars = {urls: urlDatabase, user: users[req.cookies["userID"]]};
-  if (req.cookies["userID"]){
-
   res.render("urls_index", templateVars);
-} else {
-  res.render("urls_login")
-}
 });
 
 app.get("/urls/new", (req, res) => {
@@ -113,14 +120,16 @@ app.get("/urls/new", (req, res) => {
 }});
 
 
-// assign randomized characters to new long url
+//assign randomized characters to new long url
 app.post("/urls", (req, res) => {
-  //console.log(req.body);
-
-  var errors = [];
   let randomURL = generateRandomString()
-  urlDatabase[randomURL] = req.body.longURL
-  res.redirect( "http://localhost:8080/urls/" + randomURL)
+  let newURL = {
+    shortURL: randomURL,
+    longURL: req.body.longURL,
+    userID: req.cookies["userID"].id
+  }
+  urlDatabase.push(newURL);
+  res.redirect( "/urls/" + randomURL)
 
   });
 
@@ -147,8 +156,16 @@ app.post("/urls/:shortURL", (req, res) => {
 
 //show
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { user: users[req.cookies["userID"]], shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
-  res.render("urls_show", templateVars);
+  let templateVars = {
+    user: users[req.cookies["userID"]],
+    shortURL : shortURL };
+  const shortURL = findURL(req.params.id);
+  if (shortURL){
+    res.render("urls_show", templateVars);
+  } else {
+    res.render("404")
+  }
+
 });
 
 //registration page (***** do i need the cookies template here?)
