@@ -15,17 +15,21 @@
       </tr>
     </thead>
     <tbody>
-          <% urls.forEach(url => { %>
+          <% for (url in urls){ %>
       <tr>
-        <td><%= url.shortURL %></td>
-        <td><%= url.longURL %></td>
-        <td><a href="/urls/<%=url.shortURL%>">Edit</a></td>
-        <td> <form method="POST" action="/urls/<%= url.shortURL %>/delete">
+        <td><%= urls[url].shortURL %></td>
+        <td><%= urls[url].longURL %></td>
+        <td>
+          <form method="POST" action="/urls/<%=urls[url].shortURL%>">
+          <input type="submit" value="Edit"/>
+          </form>
+        </td>
+        <td> <form method="POST" action="/urls/<%= urls[url].shortURL%>/delete">
           <input type="submit" value="Delete"/>
         </form>
         </td>
       </tr>
-      <% }) %>
+      <% } %>
       <tr>
         <td colSpan="2">
           <a href= "/urls/new">New Short Url</a>

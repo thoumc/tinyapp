@@ -7,11 +7,11 @@
   <header>
     <%- include partials/_header.ejs %>
   </header>
-        <h2><%=shortURL%></h2>
-  <form action="/urls/<%=shortURL%>" method="POST">
+        <h2><%=url.shortURL%></h2>
+  <form action="/urls/<%=url.shortURL%>/edit" method="POST">
     <div>
       <label for="newlongURL"> long URL: </label>
-      <input type="text" name="longURL" value="" placeholder= "<%=longURL%>" />
+      <input type="text" name="longURL" value="" placeholder= "<%=url.longURL%>" />
     </div>
     <input type="submit" value="Update"/>
       </form>
