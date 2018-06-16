@@ -4,9 +4,14 @@ var app = express();
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
 app.set("view engine", "ejs");
+const bcrypt = require('bcryptjs');
+
+
 //body parser that allow access POST request parameters
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
+
+//port of the server
 var PORT = 8080;
 
 //function that produces a string of 6 random alphanumeric characters:
@@ -61,7 +66,7 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "pmd"
+    password: "purple-monkey-dinosaur"
   },
  "user2RandomID": {
     id: "user2RandomID",
@@ -72,9 +77,13 @@ const users = {
 //login with cookie
 
 app.post("/login", (req, res)=>{
+
+  const password = req.body["userPassword"]
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
   for (var userID in users){
     if (users[userID].email === req.body["userEmail"]) {
-      if (users[userID].password === req.body["userPassword"]) {
+      if (bcrypt.compareSync(password, hashedPassword)) {
         res.cookie("userID", userID);
         res.redirect("/urls");
         console.log(users[userID].email)
