@@ -83,27 +83,20 @@ const users = {
 
 app.post("/login", (req, res)=>{
 
-  const password = req.body["userPassword"]
-  const hashedPassword = bcrypt.hashSync(password, 10);
-
   for (var userID in users){
     if (users[userID].email === req.body["userEmail"]) {
-      if (bcrypt.compareSync(password, hashedPassword)) {
+      if (bcrypt.compareSync(users[userID].password, bcrypt.hashSync(req.body["userPassword"], 10) )) {
         req.session["userID"] = users[userID].id
         res.redirect("/urls");
-        // console.log(users[userID].email)
-        // console.log(req.body['userEmail'])
       } else {
-        res.status(403).render("400");
-      //   console.log(users[userID].email)
-      // console.log(req.body['userEmail'])
+        res.status(403).render("403");
       }
       return;
     }
   }
-  res.status(403).render("400")
+  return res.status(403).render("403")
+});
 
-})
 
 //login page
 app.get("/login", (req, res) =>{
@@ -129,8 +122,6 @@ app.get('/urls', (req, res) =>{
     }
     return filterURL;
   }
-
-
   let templateVars = {urls: urlsForUser(urlDatabase), user: users[req.session["userID"]]};
   res.render("urls_index", templateVars);
 });
@@ -155,11 +146,7 @@ app.post("/urls", (req, res) => {
   }
 
   urlDatabase[randomURL]= newURL
-  console.log(newURL)
-
   res.redirect( "/urls/" + randomURL)
-
-
   });
 
 //delete urls in database
@@ -168,22 +155,14 @@ if (req.session["userID"] === urlDatabase[req.params["shortURL"]].userID){
   delete urlDatabase[req.params.shortURL]
   res.redirect("/urls");
 } else {
-  res.status(400).render("400");
+  res.status(403).render("403");
 }
 })
 
-
-// IM HERE ********************************************
-//redirect to long url ***&&&&****&&&***
+//redirect to long url
 app.get("/u/:shortURL", (req, res) => {
-  for (var shortURL in urlDatabase){
-    if (urlDatabase["shortURL"].shortURL === req.params["shortURL"]){
-      let longURL = urlDatabase["shortURL"].longURL
-      res.redirect(longURL);
-    } else{
-      res.status(400).render("400");
-    } }
-  console.log(req.body)
+  let longURL = urlDatabase[req.params.shortURL].longURL;
+  res.redirect(longURL);
 });
 
 
@@ -197,7 +176,7 @@ if (req.session["userID"] === urlDatabase[req.params["shortURL"]].userID){
 } else {
   res.status(400).render("400");
 }
-})
+});
 
 app.post("/urls/:shortURL/edit", (req, res) => {
     urlDatabase[req.params["shortURL"]]["longURL"] = req.body["longURL"];
