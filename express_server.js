@@ -63,7 +63,7 @@ var urlDatabase = {
     shortURL: "9sm5xK",
     longURL: "http://www.google.com",
     userID: "user2RandomID" }
-  }
+}
 
 // users of the app
 const users = {
@@ -76,7 +76,8 @@ const users = {
     id: "user2RandomID",
     email: "user2@example.com",
     password: "df"
-  }}
+  }
+}
 
 
 //login with cookie.session
@@ -102,13 +103,13 @@ app.post("/login", (req, res)=>{
 app.get("/login", (req, res) =>{
   let templateVars = {user: users[req.session["userID"]]};
   res.render("urls_login", templateVars)
-})
+});
 
 //logout
 app.post("/logout", (req, res) =>{
   req.session = null
   res.redirect("/urls")
-})
+});
 
 //show the list of urls on database
 app.get('/urls', (req, res) =>{
@@ -129,11 +130,12 @@ app.get('/urls', (req, res) =>{
 //show page for new url addtion
 app.get("/urls/new", (req, res) => {
   let templateVars = {user: users[req.session["userID"]]};
-     if (req.session["userID"]){
-      res.render("urls_new", templateVars);
+  if (req.session["userID"]){
+    res.render("urls_new", templateVars);
   } else {
-  res.render("urls_login");
-}});
+    res.render("urls_login");
+  }
+});
 
 
 //assign randomized characters to new long url
@@ -146,23 +148,24 @@ app.post("/urls", (req, res) => {
   }
 
   urlDatabase[randomURL]= newURL
+  console.log(urlDatabase)
   res.redirect( "/urls/" + randomURL)
-  });
+});
 
 //delete urls in database
 app.post("/urls/:shortURL/delete", (req, res) =>{
-if (req.session["userID"] === urlDatabase[req.params["shortURL"]].userID){
-  delete urlDatabase[req.params.shortURL]
-  res.redirect("/urls");
-} else {
-  res.status(403).render("403");
-}
-})
+  if (req.session["userID"] === urlDatabase[req.params["shortURL"]].userID){
+    delete urlDatabase[req.params.shortURL]
+    res.redirect("/urls");
+  } else {
+    res.status(403).render("403");
+  }
+});
 
 //redirect to long url
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
+  res.redirect("http://" + longURL);
 });
 
 
@@ -179,16 +182,17 @@ if (req.session["userID"] === urlDatabase[req.params["shortURL"]].userID){
 });
 
 app.post("/urls/:shortURL/edit", (req, res) => {
-    urlDatabase[req.params["shortURL"]]["longURL"] = req.body["longURL"];
-    res.redirect("/urls")
+  urlDatabase[req.params["shortURL"]]["longURL"] = req.body["longURL"];
+  res.redirect("/urls")
 });
 
 // show
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = {
     user: users[req.session["userID"]],
-    url: urlDatabase[req.params.shortURL] };
-    res.render("urls_show", templateVars);
+    url: urlDatabase[req.params.shortURL]
+  };
+  res.render("urls_show", templateVars);
 });
 
 //register page
@@ -211,19 +215,16 @@ app.post("/register", (req, res) => {
   if (alreadyExists || !req.body.email || !req.body.password) {
     res.status(400);
     res.render("400");
-    console.log(users[userID].email);
   } else {
     let randomUserID = generateRandomString();
     let newUser = {
       id: randomUserID,
       email: req.body["email"],
       password: req.body["password"]
-    }
+  }
     users[randomUserID] = newUser;
-    req.session.userID = randomUserID
+    req.session.userID = randomUserID;
     res.redirect("/urls");
-    console.log(users);
-    console.log(users[userID].email);
   }
 });
 
