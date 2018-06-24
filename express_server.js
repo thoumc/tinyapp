@@ -34,7 +34,7 @@ function urlsForUser (){
     var filterURL = {}
     for (shortURL in urlDatabase) {
       if (urlDatabase[shortURL].userID === req.session.userID){
-        filterURL[shortURL] = urlDatabase[shortURL]
+        filterURL[shortURL] = urlDatabase[shortURL];
       }
     }
     return filterURL;
@@ -53,8 +53,8 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-//data for app
-var urlDatabase = {
+//database for app
+const urlDatabase = {
   "b2xVn2": {
     shortURL: "b2xVn2",
     longURL:"http://www.lighthouselabs.ca",
@@ -87,7 +87,7 @@ app.post("/login", (req, res)=>{
   for (var userID in users){
     if (users[userID].email === req.body["userEmail"]) {
       if (bcrypt.compareSync(users[userID].password, bcrypt.hashSync(req.body["userPassword"], 10) )) {
-        req.session["userID"] = users[userID].id
+        req.session["userID"] = users[userID].id;
         res.redirect("/urls");
       } else {
         res.status(403).render("403");
@@ -95,35 +95,39 @@ app.post("/login", (req, res)=>{
       return;
     }
   }
-  return res.status(403).render("403")
+  return res.status(403).render("403");
 });
 
 
 //login page
 app.get("/login", (req, res) =>{
   let templateVars = {user: users[req.session["userID"]]};
-  res.render("urls_login", templateVars)
+  res.render("urls_login", templateVars);
 });
 
 //logout
 app.post("/logout", (req, res) =>{
-  req.session = null
-  res.redirect("/urls")
+  req.session = null;
+  res.redirect("/urls");
 });
 
 //show the list of urls on database
 app.get('/urls', (req, res) =>{
 
   function urlsForUser (){
-    var filterURL = {}
+    var filterURL = {};
     for (shortURL in urlDatabase) {
       if (urlDatabase[shortURL].userID === req.session.userID){
-        filterURL[shortURL] = urlDatabase[shortURL]
+        filterURL[shortURL] = urlDatabase[shortURL];
       }
     }
     return filterURL;
   }
-  let templateVars = {urls: urlsForUser(urlDatabase), user: users[req.session["userID"]]};
+
+  let templateVars = {
+    urls: urlsForUser(urlDatabase),
+    user: users[req.session["userID"]]
+  };
   res.render("urls_index", templateVars);
 });
 
@@ -147,15 +151,14 @@ app.post("/urls", (req, res) => {
     userID: req.session["userID"]
   }
 
-  urlDatabase[randomURL]= newURL
-  console.log(urlDatabase)
-  res.redirect( "/urls/" + randomURL)
+  urlDatabase[randomURL]= newURL;
+  res.redirect( "/urls/" + randomURL);
 });
 
 //delete urls in database
 app.post("/urls/:shortURL/delete", (req, res) =>{
   if (req.session["userID"] === urlDatabase[req.params["shortURL"]].userID){
-    delete urlDatabase[req.params.shortURL]
+    delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
   } else {
     res.status(403).render("403");
@@ -165,7 +168,7 @@ app.post("/urls/:shortURL/delete", (req, res) =>{
 //redirect to long url
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect("http://" + longURL);
+  res.redirect(longURL);
 });
 
 
@@ -175,7 +178,7 @@ app.post("/urls/:shortURL", (req, res) => {
     user: users[req.session["userID"]],
     url: urlDatabase[req.params["shortURL"]] }
 if (req.session["userID"] === urlDatabase[req.params["shortURL"]].userID){
-  res.redirect("/urls/" + req.params.shortURL)
+  res.redirect("/urls/" + req.params.shortURL);
 } else {
   res.status(400).render("400");
 }
@@ -183,7 +186,7 @@ if (req.session["userID"] === urlDatabase[req.params["shortURL"]].userID){
 
 app.post("/urls/:shortURL/edit", (req, res) => {
   urlDatabase[req.params["shortURL"]]["longURL"] = req.body["longURL"];
-  res.redirect("/urls")
+  res.redirect("/urls");
 });
 
 // show
@@ -196,9 +199,10 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 //register page
+
 app.get("/register", (req, res) => {
   let templateVars = {userID: req.session["userID"],}
-  res.render("urls_register", templateVars)
+  res.render("urls_register", templateVars);
 })
 
 // action to get registered
